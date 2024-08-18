@@ -6,6 +6,7 @@ import {
   ReceiveMessageCommand,
   SQSClient,
   QueueAttributeName,
+  MessageSystemAttributeName,
 } from "@aws-sdk/client-sqs";
 import { assert } from "chai";
 import * as sinon from "sinon";
@@ -926,6 +927,7 @@ describe("Consumer", () => {
       consumer = new Consumer({
         queueUrl: QUEUE_URL,
         messageAttributeNames: ["attribute-1", "attribute-2"],
+        messageSystemAttributeNames: ["SentTimestamp", "ApproximateReceiveCount"],
         region: REGION,
         handleMessage,
         batchSize: 3,
@@ -944,6 +946,7 @@ describe("Consumer", () => {
           QueueUrl: QUEUE_URL,
           AttributeNames: [],
           MessageAttributeNames: ["attribute-1", "attribute-2"],
+          messageSystemAttributeNames: ["SentTimestamp", "ApproximateReceiveCount"],
           MaxNumberOfMessages: 3,
           WaitTimeSeconds: AUTHENTICATION_ERROR_TIMEOUT,
           VisibilityTimeout: undefined,
@@ -957,8 +960,11 @@ describe("Consumer", () => {
         MessageId: "1",
         Body: "body-1",
         Attributes: {
-          ApproximateReceiveCount: 1,
+          ApproximateNumberOfMessages: 1,
         },
+        MessageSystemAttributes: {
+          ApproximateReceiveCount: 1,
+        }
       };
 
       sqs.send.withArgs(mockReceiveMessage).resolves({
@@ -966,8 +972,12 @@ describe("Consumer", () => {
       });
 
       const attributeNames: QueueAttributeName[] = [
-        "ApproximateReceiveCount" as QueueAttributeName,
+        "ApproximateNumberOfMessages"
       ];
+
+      const messageSystemAttributes: MessageSystemAttributeName[] = [
+        "ApproximateReceiveCount"
+      ]
 
       consumer = new Consumer({
         queueUrl: QUEUE_URL,
@@ -988,6 +998,7 @@ describe("Consumer", () => {
           QueueUrl: QUEUE_URL,
           AttributeNames: ["ApproximateReceiveCount"],
           MessageAttributeNames: [],
+          messageSystemAttributes,
           MaxNumberOfMessages: 1,
           WaitTimeSeconds: AUTHENTICATION_ERROR_TIMEOUT,
           VisibilityTimeout: undefined,

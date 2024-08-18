@@ -1,4 +1,4 @@
-import { SQSClient, Message, QueueAttributeName } from "@aws-sdk/client-sqs";
+import { SQSClient, Message, QueueAttributeName, MessageSystemAttributeName } from "@aws-sdk/client-sqs";
 
 /**
  * The options for the consumer.
@@ -18,6 +18,14 @@ export interface ConsumerOptions {
    * @defaultvalue `[]`
    */
   messageAttributeNames?: string[];
+
+    /**
+   * List of system message attributes to retrieve, such as ApproximateReceiveCount, SentTimestamp, SenderId, and more.
+   * See https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-sqs/Interface/ReceiveMessageCommandInput/
+   * @defaultvalue `[]`
+   */
+  messageSystemAttributeNames?: MessageSystemAttributeName[];
+
   /** @hidden */
   stopped?: boolean;
   /**
